@@ -1,10 +1,11 @@
 'use strict';
 
-const URL   = require('url');
-const _     = require('lodash');
-const Cache = require('./lib/sync-disk-cache');
-const areOn = require('./lib/boolean').areOn
-const Debug = require('./lib/debug');
+const Assert = require('assert-plus')
+const URL    = require('url');
+const _      = require('lodash');
+const Cache  = require('./lib/sync-disk-cache');
+const areOn  = require('./lib/boolean').areOn
+const Debug  = require('./lib/debug');
 
 const debug = Debug.log;
 
@@ -52,8 +53,11 @@ function APICache (userOpts) {
 
   debug('userOptions: %o', userOptions)
 
+  Assert.optionalString(userOptions.compression, '`userOptions.compression` should be a string or undefined')
+
   const cache = new Cache(userOptions.name, {
-    location : userOptions.directory
+    compression : userOptions.compression,
+    location    : userOptions.directory
   });
 
   let index = null;
@@ -205,5 +209,7 @@ function APICache (userOpts) {
 
   return this;
 }
+
+APICache.CompressionTypes = Cache.CompressionTypes
 
 module.exports = APICache
