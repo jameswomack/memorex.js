@@ -17,8 +17,11 @@ let tortas = {
 
 
 module.exports.memrx = memrx.bind(null, {
-  handleSideEffects : (cache, method, urlPathTemplate) => {
-    return method === 'POST' && cache.remove(urlPathTemplate('GET'))
+  handleSideEffects : (cache, method, key, urlPathTemplate) => {
+    if (method === 'POST') {
+      cache.remove(urlPathTemplate('GET'))
+      cache.remove(key)
+    }
   }
 })
 

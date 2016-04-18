@@ -18,17 +18,21 @@ function keymaker (req, options) {
   const url  = req.originalUrl || req.url
   const key  = `${url}${options.sep}${req.method.toUpperCase()}${options.sep}${body}`
 
-  options.handleSideEffects &&
-    options.handleSideEffects(options.cache, req.method.toUpperCase(), (method) =>
-        `${url}${options.sep}${method}${options.sep}${JSON.stringify({})}`)
+  function handle (k) {
+    options.handleSideEffects &&
+      options.handleSideEffects(options.cache, req.method.toUpperCase(), k, (method) =>
+          `${url}${options.sep}${method}${options.sep}${JSON.stringify({})}`)
+  }
 
   // Remove querystring from key if the shouldParse option is truthy
   // This is (so far) only used in the case of JSON-P
   let parsedKey
 
   if (options.shouldParse && (parsedKey = URL.parse(key).pathname)) {
-    return parsedKey
+    return handle(parsedKey)
   }
+
+  handle(key)
 
   return key
 }
