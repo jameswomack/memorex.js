@@ -120,10 +120,19 @@ function APICache (userOpts) {
 
       // Remove querystring from key if jsonp option is enabled
       const key = keymaker(req, _.defaults({ }, middlewareOptions, {
+        // `handleSideEffects` allow you to modify the cache on specific
+        // requests that would normally influence the outcome of subsequent
+        // requests. On a POST you may wish to remove a cached GET response
         handleSideEffects : null,
+        // `cache` is used in concert with `handleSideEffects`
         cache             : cache,
+        // `shouldParse` is based on a holdover from apicache
         shouldParse       : userOptions.jsonp,
-        bodyRange         : [ 0, 48 ],
+        // The range of characters from the POST|PUT|* body that're used to
+        // identify the response. A greater range means less chance of
+        // collision but also fewer cache hits. The default covers most
+        // of our needs in developing UIs but isn't viable for production use
+        bodyRange         : [ 0, 256 ],
         sep               : ':$$$:'
       }))
 
